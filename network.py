@@ -32,7 +32,7 @@ class Network:
             # Calculate loss
             loss = l.mean_squared(actual_output, t)
 
-            print(loss)
+            print(i, t, actual_output, loss)
 
 
 class Layer:

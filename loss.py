@@ -1,2 +1,2 @@
 def mean_squared(actual, target):
-    return (actual - target) ** 2
+    return (target - actual) ** 2
