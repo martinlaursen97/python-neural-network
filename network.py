@@ -1,8 +1,18 @@
 import numpy as np
 import activation as a
 
-
 np.random.seed(0)
+
+
+class Network:
+    def __init__(self, layers):
+        self.layers = layers
+
+    def insert_training_inputs(self, training_inputs):
+        self.training_inputs = training_inputs
+
+    def insert_training_targets(self, training_targets):
+        self.training_targets = training_targets
 
 
 class Layer:
