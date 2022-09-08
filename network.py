@@ -1,5 +1,6 @@
 import numpy as np
 import activation as a
+import loss as l
 
 #np.random.seed(0)
 
@@ -26,9 +27,12 @@ class Network:
                 layer.forward(prev_layer.output)
 
             # Output of the output layer ([-1] == last layer)
-            output = self.layers[-1].output
+            actual_output = self.layers[-1].output
 
-            print(output)
+            # Calculate loss
+            loss = l.mean_squared(actual_output, t)
+
+            print(loss)
 
 
 class Layer:
