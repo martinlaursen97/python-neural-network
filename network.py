@@ -14,6 +14,9 @@ class Network:
     def insert_training_targets(self, training_targets):
         self.training_targets = training_targets
 
+    def train(self):
+        pass
+
 
 class Layer:
     def __init__(self, input_amount, layer_size):
@@ -27,8 +30,6 @@ class Layer:
         # Need to calculate the outputs (w*i +b) of every neuron when forward propagating
         self.output = a.sigmoid(np.dot(inputs, self.weights) + self.biases)
 
-        print(self.output)
-
 
 l_in = Layer(2, 2)
 l_out = Layer(2, 1)
@@ -38,3 +39,7 @@ input_targ = np.array([[0], [1], [1], [1]])
 
 l_in.forward(input_data)
 l_out.forward(l_in.output)
+
+network = Network([l_in, l_out])
+network.insert_training_inputs(input_data)
+network.insert_training_targets(input_targ)
