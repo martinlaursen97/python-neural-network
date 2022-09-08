@@ -1,6 +1,8 @@
 import numpy as np
+import activation as a
 
-#np.random.seed(0)
+
+np.random.seed(0)
 
 
 class Layer:
@@ -13,9 +15,10 @@ class Layer:
 
     def forward(self, inputs):
         # Need to calculate the outputs (w*i +b) of every neuron when forward propagating
-        self.output = np.dot(inputs, self.weights) + self.biases
+        self.output = a.sigmoid(np.dot(inputs, self.weights) + self.biases)
 
         print(self.output)
+
 
 l_in = Layer(2, 2)
 l_out = Layer(2, 1)
