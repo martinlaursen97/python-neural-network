@@ -1,7 +1,7 @@
 import numpy as np
 import activation as a
 
-np.random.seed(0)
+#np.random.seed(0)
 
 
 class Network:
@@ -15,7 +15,20 @@ class Network:
         self.training_targets = training_targets
 
     def train(self):
-        pass
+        for i, t in zip(self.training_inputs, self.training_targets):
+
+            # Insert training data into input layer
+            self.layers[0].forward(i)
+
+            # Forward propagate remaining layers
+            for n, layer in enumerate(self.layers[1:], start=1):
+                prev_layer = self.layers[n - 1]
+                layer.forward(prev_layer.output)
+
+            # Output of the output layer ([-1] == last layer)
+            output = self.layers[-1].output
+
+            print(output)
 
 
 class Layer:
@@ -37,9 +50,7 @@ l_out = Layer(2, 1)
 input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 input_targ = np.array([[0], [1], [1], [1]])
 
-l_in.forward(input_data)
-l_out.forward(l_in.output)
-
 network = Network([l_in, l_out])
 network.insert_training_inputs(input_data)
 network.insert_training_targets(input_targ)
+network.train()
