@@ -38,12 +38,13 @@ class Network:
                # print(iteration, i, t, actual_output, loss)
 
                 # Calculate gradient of output layer
-                self.layers[-1].calc_gradients(loss, True)
+                self.layers[-1].backward(loss, True, self.learning_rate)
 
                 # Backward propagate remaining layers
                 for n, layer in reversed(list(enumerate(self.layers[:-1]))):
                     prev_layer = self.layers[n + 1]
-                    layer.calc_gradients(prev_layer, False)
+                    layer.backward(prev_layer, False, self.learning_rate)
+
                     #print(layer.gradients)
 
                     #print(layer.gradients)
@@ -63,6 +64,10 @@ class Layer:
         self.inputs = output
         self.output = a.sigmoid(output)
 
+    def backward(self, prev, at_output, learning_rate):
+        self.calc_gradients(prev, at_output)
+        self.adjust_weights(learning_rate)
+
     def calc_gradients(self, prev, at_output):
         # Prev layer gradients = loss if its the output layer
 
@@ -71,7 +76,7 @@ class Layer:
         else:
             self.gradients = a.sigmoid(self.inputs) * (1 - a.sigmoid(self.inputs)) * (prev.gradients * prev.weights)
 
-    def adjust_weights(self):
+    def adjust_weights(self, learning_rate):
         pass
 
 l_in = Layer(2, 2)
@@ -81,7 +86,7 @@ l_out = Layer(2, 1)
 input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 input_targ = np.array([[0], [1], [1], [1]])
 
-network = Network([l_in, l_h, l_out])
+network = Network([l_in, l_h, l_out], 0.0001)
 network.insert_training_inputs(input_data)
 network.insert_training_targets(input_targ)
 network.train(200)
