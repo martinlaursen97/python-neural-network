@@ -17,7 +17,7 @@ class Network:
         self.training_targets = training_targets
 
     def train(self, iterations):
-        for i in range(iterations):
+        for iteration in range(iterations):
             for i, t in zip(self.training_inputs, self.training_targets):
 
                 # Insert training data into input layer
