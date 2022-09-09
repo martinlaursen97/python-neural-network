@@ -60,9 +60,8 @@ class Layer:
 
     def forward(self, inputs):
         # Need to calculate the outputs (w*i +b) of every neuron when forward propagating
-        output = np.dot(inputs, self.weights) + self.biases
-        self.inputs = output
-        self.output = a.sigmoid(output)
+        self.inputs = np.dot(inputs, self.weights) + self.biases
+        self.output = a.sigmoid(self.inputs)
 
     def backward(self, prev, at_output, learning_rate):
         self.calc_gradients(prev, at_output)
