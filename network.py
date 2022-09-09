@@ -7,8 +7,9 @@ import loss as l
 
 
 class Network:
-    def __init__(self, layers):
+    def __init__(self, layers, learning_rate):
         self.layers = layers
+        self.learning_rate = learning_rate
 
     def insert_training_inputs(self, training_inputs):
         self.training_inputs = training_inputs
@@ -34,7 +35,7 @@ class Network:
                 # Calculate loss
                 loss = l.mean_squared(actual_output, t)
 
-                print(iteration, i, t, actual_output, loss)
+               # print(iteration, i, t, actual_output, loss)
 
                 # Calculate gradient of output layer
                 self.layers[-1].calc_gradients(loss, True)
@@ -43,6 +44,7 @@ class Network:
                 for n, layer in reversed(list(enumerate(self.layers[:-1]))):
                     prev_layer = self.layers[n + 1]
                     layer.calc_gradients(prev_layer, False)
+                    #print(layer.gradients)
 
                     #print(layer.gradients)
 
@@ -69,12 +71,12 @@ class Layer:
         else:
             self.gradients = a.sigmoid(self.inputs) * (1 - a.sigmoid(self.inputs)) * (prev.gradients * prev.weights)
 
+    def adjust_weights(self):
+        pass
 
 l_in = Layer(2, 2)
 l_h = Layer(2, 2)
 l_out = Layer(2, 1)
-
-print(l_h.weights[1])
 
 input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 input_targ = np.array([[0], [1], [1], [1]])
