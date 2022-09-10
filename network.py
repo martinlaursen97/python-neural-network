@@ -35,19 +35,16 @@ class Network:
                 # Calculate loss
                 loss = l.mean_squared(actual_output, t)
 
-               # print(iteration, i, t, actual_output, loss)
+                print(iteration, i, t, actual_output, loss)
 
                 # Calculate gradient of output layer
-                self.layers[-1].backward(loss, True, self.learning_rate)
+
+                self.layers[-1].backward(self.layers[-1], loss, self.learning_rate, at_output=True)
 
                 # Backward propagate remaining layers
                 for n, layer in reversed(list(enumerate(self.layers[:-1]))):
                     prev_layer = self.layers[n + 1]
-                    layer.backward(prev_layer, False, self.learning_rate)
-
-                    #print(layer.gradients)
-
-                    #print(layer.gradients)
+                    layer.backward(prev_layer, None, self.learning_rate, at_output=False)
 
 
 class Layer:
@@ -61,31 +58,31 @@ class Layer:
     def forward(self, inputs):
         # Need to calculate the outputs (w*i +b) of every neuron when forward propagating
         self.inputs = np.dot(inputs, self.weights) + self.biases
-        self.output = a.sigmoid(self.inputs)
+        self.output = a.sigmoid(self.inputs, deriv=False)
 
-    def backward(self, prev, at_output, learning_rate):
-        self.calc_gradients(prev, at_output)
-        self.adjust_weights(learning_rate)
-
-    def calc_gradients(self, prev, at_output):
-        # Prev layer gradients = loss if its the output layer
-
+    def backward(self, prev, error, learning_rate, at_output):
         if at_output:
-            self.gradients = a.sigmoid(self.inputs) * (1 - a.sigmoid(self.inputs)) * prev
+            self.gradients = error * a.sigmoid(self.inputs, True)
         else:
-            self.gradients = a.sigmoid(self.inputs) * (1 - a.sigmoid(self.inputs)) * (prev.gradients * prev.weights)
+            new_error = prev.inputs * self.weights.T
+            self.gradients = new_error * a.sigmoid(self.inputs, True)
 
-    def adjust_weights(self, learning_rate):
-        pass
+        self.adjust_weights(prev, learning_rate)
 
-l_in = Layer(2, 2)
-l_h = Layer(2, 2)
-l_out = Layer(2, 1)
+    def adjust_weights(self, prev, learning_rate):
+        self.weights += prev.output.T * prev.gradients * learning_rate
 
-input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+
+
+
+l_in = Layer(3, 3)
+# l_h = Layer(2, 2)
+l_out = Layer(3, 1)
+
+input_data = np.array([[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 0]])
 input_targ = np.array([[0], [1], [1], [1]])
 
-network = Network([l_in, l_h, l_out], 0.0001)
+network = Network([l_in, l_out], 0.1)
 network.insert_training_inputs(input_data)
 network.insert_training_targets(input_targ)
-network.train(200)
+network.train(1000)
