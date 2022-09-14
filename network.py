@@ -6,63 +6,62 @@ np.random.seed(0)
 
 
 class Network:
-    def __init__(self, layers):
-        self.weights = [np.random.rand(layers[i - 1], layers[i]) for i in range(1, len(layers))]
-        self.prev_weights = self.weights
+    def __init__(self):
+        self.layers = []
 
-        self.inputs = []
-        self.outputs = []
-        self.gradients = []
+    def add(self, layer):
+        self.layers.append(layer)
 
-    def forward(self, X):
-        inputs = []
-        outputs = []
+    def train(self, iterations, learning_rate, _x, _y):
+        for iteration in range(iterations):
+            for x, y in zip(_x, _y):
+                output = self.think(x)
+                error = loss.mean_squared(output, y)
+                self.backprop(error)
 
-        prev_input = X
-        for w in self.weights:
-            v = np.dot(prev_input, w) + 0.1
-            y = activation.sigmoid(v)
-            prev_input = y
+    def think(self, input):
+        self.layers[0].forward(input)
+        for n, layer in enumerate(self.layers[1:], start=1):
+            prev_layer = self.layers[n - 1]
+            layer.forward(prev_layer.output)
+        return self.layers[-1].output
 
-            inputs.append(v)
-            outputs.append(y)
-        self.inputs = inputs
-        self.outputs = outputs
+    def backprop(self, error):
+        self.layers[-1].backward()
 
-        return self.outputs[-1]
-
-    def backward(self, error, learning_rate):
-        gradients = [0] * len(self.weights)
-
-        output_gradient = activation.sigmoid_d(self.inputs[-1]) * error
-        gradients[-1] = output_gradient
-
-        for i in range(len(self.weights) - 2, -1, -1):
-            gradients[i] = activation.sigmoid_d(self.inputs[i]) * (gradients[i + 1] * self.weights[i + 1])
-
-        for i in range(len(self.weights)):
-            self.weights[i] += learning_rate * self.prev_weights[i] + 0.2 * gradients[i] * self.inputs[i]
-
-        self.prev_weights = self.weights
-
-        self.gradients = gradients
-
-    def train(self, iterations, learning_rate, inputs, targets):
-        for i in range(iterations):
-
-            for X, t in zip(inputs, targets):
-                output = self.forward(X)
-
-                error = loss.mean_squared(output, t)
+        # Backward propagate remaining layers
+        for n, layer in reversed(list(enumerate(self.layers[:-1]))):
+            prev_layer = self.layers[n + 1]
+            layer.backward()
 
 
-                self.backward(error, learning_rate)
+class Layer:
+    def __init__(self, input_amount, neuron_amount):
+        self.weights = np.random.randn(input_amount, neuron_amount) * 0.1
+        self.biases = np.ones((1, neuron_amount))
 
-                print(t, output, error)
+    def forward(self, inputs):
+        self.inputs = np.dot(inputs, self.weights) + self.biases
+        self.output = activation.sigmoid(self.inputs)
+
+    def backward(self):
+        pass
 
 
-X = np.array([[0, 0], [1, 0], [0, 1], [1, 1]])
-t = np.array([[0], [1], [1], [1]])
+x = np.array([[0.1, 0.9]])
+y = np.array([[0.9]])
 
-nn = Network([2, 2, 1])
-nn.train(20, 0.01, X, t)
+nn = Network()
+
+l1 = Layer(2, 2)
+l1.weights = np.array([[-0.2, 0.1], [0.1, 0.3]])
+l1.biases = np.array([[0.1, 0.1]])
+
+l2 = Layer(2, 1)
+l2.weights = np.array([0.2, 0.3])
+l2.biases = np.array([[0.2]])
+
+nn.add(l1)
+nn.add(l2)
+
+nn.train(10, 0.01, x, y)

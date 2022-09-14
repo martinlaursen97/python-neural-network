@@ -6,5 +6,5 @@ def sigmoid(x):
 
 
 def sigmoid_d(x):
-    return x * (1 - x)
+    return sigmoid(x) * (1 - sigmoid(x))
 
