@@ -15,14 +15,16 @@ class Network:
     def train(self, iterations, learning_rate, _x, _y):
         for iteration in range(iterations):
             for x, y in zip(_x, _y):
-                output = self.think(x)
+
+                output = self.predict(x)
                 error = loss.mean_squared(output, y)
 
-                print(output, error)
+                if iteration % 10 == 0:
+                    print(iteration, '-', x, y, output, error)
 
                 self.backprop(error, x, learning_rate)
 
-    def think(self, x):
+    def predict(self, x):
         self.layers[0].forward(x)
         for n, layer in enumerate(self.layers[1:], start=1):
             prev_layer = self.layers[n - 1]
@@ -57,7 +59,6 @@ class Layer:
     def backward(self, prev, learning_rate):
         self.gradients = activation.sigmoid_d(self.inputs) * (prev.gradients * prev.weights)
 
-
     def backward_in(self, prev, x, learning_rate):
         self.gradients = activation.sigmoid_d(self.inputs) * (prev.gradients * prev.weights)
         self.weights = self.weights + learning_rate * self.prev_weights + 0.25 * self.gradients * x
@@ -75,16 +76,19 @@ class Layer:
         self.prev_biases = self.biases
 
 
-x = np.array([[0.1, 0.9]])
-y = np.array([[0.2]])
+x = np.array([[0, 0], [1, 0], [0, 1], [1, 1]])
+y = np.array([[0], [1], [1], [1]])
 
 nn = Network()
 
 l1 = Layer(2, 2)
 l2 = Layer(2, 1)
 
-
 nn.add(l1)
 nn.add(l2)
 
-nn.train(1000, 0.0001, x, y)
+nn.train(10000, 0.0001, x, y)
+
+output = nn.predict([[0, 0]])
+print(output)
+
