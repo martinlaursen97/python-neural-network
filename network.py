@@ -2,7 +2,7 @@ import numpy as np
 import activation
 import loss
 
-np.random.seed(0)
+#np.random.seed(1)
 
 
 class Network:
@@ -12,14 +12,15 @@ class Network:
     def add(self, layer):
         self.layers.append(layer)
 
-    def train(self, iterations, learning_rate, _x, _y):
+    def train(self, iterations, learning_rate, _x, _y, verbose=True):
         for i in range(iterations):
             for x, y in zip(_x, _y):
                 output = self.predict(x)
                 error = loss.difference(output, y)
 
-                if i % 10 == 0:
-                    print(i, '-', x, y, output, loss.mean_squared(output, y))
+                if verbose:
+                    if i % 10 == 0:
+                        print(i, '-', x, y, output, loss.mean_squared(output, y))
 
                 self.backprop(error, x, learning_rate)
 
@@ -86,15 +87,15 @@ y = [[0], [1], [1], [0]]
 
 nn = Network()
 
-l1 = Layer(2, 10)
-l2 = Layer(10, 10)
-l3 = Layer(10, 1)
+nn.add(Layer(2, 5))
+nn.add(Layer(5, 5))
+nn.add(Layer(5, 5))
+nn.add(Layer(5, 1))
 
-nn.add(l1)
-nn.add(l2)
-nn.add(l3)
+nn.train(1500, 0.001, x, y, verbose=False)
 
-nn.train(1000, 0.001, x, y)
-
-output = nn.predict([[0, 0]])
-print(output)
+# output = nn.predict([[1, 1]])
+print(nn.predict([[0, 0]]),
+      nn.predict([[0, 1]]),
+      nn.predict([[1, 0]]),
+      nn.predict([[1, 1]]))
