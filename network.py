@@ -12,14 +12,14 @@ class Network:
     def add(self, layer):
         self.layers.append(layer)
 
-    def train(self, iterations, learning_rate, _x, _y, verbose=True):
+    def train(self, iterations, learning_rate, _x, _y, mod=10, verbose=True):
         for i in range(iterations):
             for x, y in zip(_x, _y):
                 output = self.predict(x)
                 error = loss.difference(output, y)
 
                 if verbose:
-                    if i % 10 == 0:
+                    if i % mod == 0:
                         print(i, '-', x, y, output, loss.mean_squared(output, y))
 
                 self.backprop(error, x, learning_rate)
@@ -92,7 +92,7 @@ nn.add(Layer(5, 5))
 nn.add(Layer(5, 5))
 nn.add(Layer(5, 1))
 
-nn.train(1500, 0.001, x, y, verbose=False)
+nn.train(1500, 0.001, x, y, 10, verbose=False)
 
 # output = nn.predict([[1, 1]])
 print(nn.predict([[0, 0]]),
