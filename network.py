@@ -83,18 +83,16 @@ class Layer:
 
 
 x = [[0, 0], [1, 0], [0, 1], [1, 1]]
-y = [[0], [1], [1], [0]]
+y = [[1], [1], [1], [0]]
 
 nn = Network()
 
 nn.add(Layer(2, 5))
 nn.add(Layer(5, 5))
-nn.add(Layer(5, 5))
 nn.add(Layer(5, 1))
 
-nn.train(1500, 0.001, x, y, 10, verbose=False)
+nn.train(1500, 0.0009, x, y, 10, verbose=False)
 
-# output = nn.predict([[1, 1]])
 print(nn.predict([[0, 0]]),
       nn.predict([[0, 1]]),
       nn.predict([[1, 0]]),
