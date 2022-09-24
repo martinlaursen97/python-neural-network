@@ -16,6 +16,7 @@ def softmax(x):
     return distribution
 
 
-def cross_entropy_loss(x, target):
-    desired_idx = np.argmax(target)
-    return -math.log(x[0][desired_idx], 2)
+def cross_entropy_loss(actual, target):
+    loss = -np.sum(actual * np.log(target))
+    return loss / float(actual.shape[0])
+
