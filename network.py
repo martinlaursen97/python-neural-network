@@ -2,7 +2,7 @@ import numpy as np
 import activation
 import loss
 
-np.random.seed(1)
+# np.random.seed(1)
 
 
 class Network:
@@ -83,9 +83,10 @@ nn = Network()
 
 nn.add(Layer(2, 8))
 nn.add(Layer(8, 8))
+nn.add(Layer(8, 8))
 nn.add(Layer(8, 1))
 
-nn.train(1500, 0.0009, x, y, 10, verbose=True)
+nn.train(1500, 0.001, x, y, 10, verbose=True)
 
 print(nn.predict([[0, 0]]),
       nn.predict([[1, 0]]),
