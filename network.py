@@ -15,22 +15,20 @@ class Network:
     def add(self, layer):
         self.layers.append(layer)
 
-    def train(self, iterations, learning_rate, _x, _y, mod=10, verbose=True, loss_f='difference'):
+    def train(self, iterations, learning_rate, _x, _y, mod=100, verbose=True, loss_f='difference'):
         for i in range(iterations):
             for x, y in zip(_x, _y):
-                print(len(y))
                 output = self.predict(x)
 
                 error = 0
                 if loss_f == 'difference':
                     error = loss.difference(output, y)
                 elif loss_f == 'categorical_crossentropy':
-                    dist = loss.softmax(output)
-                    error = loss.cross_entropy_loss(dist, y)
+                    error = loss.categorical_crossentropy(output, y)
 
                 if verbose:
                     if i % mod == 0:
-                        print(i, '-', x, y, output)
+                        print(error)
 
                 self.backprop(error, x, learning_rate)
 
@@ -56,16 +54,20 @@ class Network:
 
 
 class Layer:
-    def __init__(self, input_amount, neuron_amount):
+    def __init__(self, input_amount, neuron_amount, activation_f='sigmoid'):
         self.weights = np.random.randn(input_amount, neuron_amount) * 0.1
         self.prev_weights = self.weights
         self.biases = np.zeros((1, neuron_amount))
         self.prev_biases = self.biases
         self.thresh_hold = 0.25
+        self.activation_f = activation_f
 
     def forward(self, inputs):
         self.inputs = np.dot(inputs, self.weights) + self.biases
-        self.output = activation.sigmoid(self.inputs)
+        if self.activation_f == 'sigmoid':
+            self.output = activation.sigmoid(self.inputs)
+        elif self.activation_f == 'softmax':
+            self.output = loss.softmax(self.inputs)
 
     def backward(self, error, inp, learning_rate):
         self.set_gradients(error, self.inputs)
@@ -90,13 +92,13 @@ frame.normalize()
 
 x, y = frame.get_x(), pd.get_dummies(frame.get_y()).values
 
-# nn = Network()
-#
-# nn.add(Layer(784, 784))
-# nn.add(Layer(784, 15))
-# nn.add(Layer(15, 15))
-# nn.add(Layer(15, 10))
-#
-#
-# nn.train(1, 0.001, x, y, verbose=False, loss_f='categorical_crossentropy')
-# nn.predict(x[0])
+nn = Network()
+
+nn.add(Layer(784, 784, activation_f='sigmoid'))
+nn.add(Layer(784, 15, activation_f='sigmoid'))
+nn.add(Layer(15, 15, activation_f='sigmoid'))
+nn.add(Layer(15, 10, activation_f='softmax'))
+nn.train(1, 0.001, x, y, verbose=True, loss_f='categorical_crossentropy')
+
+pred = nn.predict(x[2])
+print(np.argmax(pred), frame.get_y()[2], pred)

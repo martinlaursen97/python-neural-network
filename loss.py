@@ -11,12 +11,10 @@ def difference(actual, target):
 
 
 def softmax(x):
-    err_sum = np.sum(np.exp(x))
-    distribution = np.exp(x) / err_sum
-    return distribution
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
 
 
-def cross_entropy_loss(actual, target):
-    loss = -np.sum(actual * np.log(target))
-    return loss / float(actual.shape[0])
+def categorical_crossentropy(actual, target):
+    return -np.sum(actual * np.log(target + 10**-100))
 
