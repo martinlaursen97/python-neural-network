@@ -1,7 +1,7 @@
 import numpy as np
 import activation
 import loss
-import frame
+from frame import Frame
 
 
 # np.random.seed(1)
@@ -78,8 +78,10 @@ class Layer:
         self.prev_biases = self.biases
 
 
-x = [[0, 0], [1, 0], [0, 1], [1, 1]]
-y = [[0], [1], [1], [0]]
+frame = Frame('mnist_test.csv')
+frame.transform(0, 1, -1)
+frame.normalize()
+x, y = frame.x, frame.y
 
 nn = Network()
 

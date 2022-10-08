@@ -17,12 +17,12 @@ class Frame:
             if not line:
                 break
 
-            self.x.append([int(i) for i in line_split[input_idx]])
-            self.y.append([int(i) for i in line_split[output_from_idx:output_to_idx]])
+            self.x.append([int(i) for i in line_split[output_from_idx:output_to_idx]])
+            self.y.append([int(i) for i in line_split[input_idx]])
 
     def get_max(self):
         max = 0
-        for i in self.y:
+        for i in self.x:
             for j in i:
                 if j > max:
                     max = j
@@ -31,4 +31,4 @@ class Frame:
 
     def normalize(self):
         max = self.get_max()
-        self.y = [[i / max for i in j] for j in self.y]
+        self.x = [[i / max for i in j] for j in self.x]
