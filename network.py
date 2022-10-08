@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import activation
 import loss
 from frame import Frame
@@ -14,13 +15,18 @@ class Network:
     def add(self, layer):
         self.layers.append(layer)
 
-    def train(self, iterations, learning_rate, _x, _y, mod=10, verbose=True):
+    def train(self, iterations, learning_rate, _x, _y, mod=10, verbose=True, loss_f='difference'):
         for i in range(iterations):
             for x, y in zip(_x, _y):
+                print(len(y))
                 output = self.predict(x)
-                error = loss.difference(output, y)
-                # dist = loss.softmax(output)
-                # error = loss.cross_entropy_loss(dist, y)
+
+                error = 0
+                if loss_f == 'difference':
+                    error = loss.difference(output, y)
+                elif loss_f == 'categorical_crossentropy':
+                    dist = loss.softmax(output)
+                    error = loss.cross_entropy_loss(dist, y)
 
                 if verbose:
                     if i % mod == 0:
@@ -79,19 +85,18 @@ class Layer:
 
 
 frame = Frame('mnist_test.csv')
-frame.transform(0, 1, -1)
+frame.transform(0, 1)
 frame.normalize()
-x, y = frame.x, frame.y
 
-nn = Network()
+x, y = frame.get_x(), pd.get_dummies(frame.get_y()).values
 
-nn.add(Layer(2, 8))
-nn.add(Layer(8, 8))
-nn.add(Layer(8, 1))
-
-nn.train(1500, 0.001, x, y, 10, verbose=True)
-
-print(nn.predict([[0, 0]]),
-      nn.predict([[1, 0]]),
-      nn.predict([[0, 1]]),
-      nn.predict([[1, 1]]))
+# nn = Network()
+#
+# nn.add(Layer(784, 784))
+# nn.add(Layer(784, 15))
+# nn.add(Layer(15, 15))
+# nn.add(Layer(15, 10))
+#
+#
+# nn.train(1, 0.001, x, y, verbose=False, loss_f='categorical_crossentropy')
+# nn.predict(x[0])
