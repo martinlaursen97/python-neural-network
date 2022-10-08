@@ -32,12 +32,3 @@ class Frame:
     def normalize(self):
         max = self.get_max()
         self.y = [[i / max for i in j] for j in self.y]
-
-
-f = Frame("mnist_test.csv")
-
-f.transform(0, 1, -1)
-f.normalize()
-x, y = f.x, f.y
-
-print(y)
