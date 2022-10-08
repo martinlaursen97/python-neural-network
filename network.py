@@ -1,6 +1,8 @@
 import numpy as np
+import pandas as pd
 import activation
 import loss
+
 
 # np.random.seed(1)
 
@@ -82,7 +84,6 @@ y = [[0], [1], [1], [0]]
 nn = Network()
 
 nn.add(Layer(2, 8))
-nn.add(Layer(8, 8))
 nn.add(Layer(8, 8))
 nn.add(Layer(8, 1))
 
